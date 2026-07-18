@@ -1,0 +1,14 @@
+<svg viewBox="0 0 120 120" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Majal mark">
+  <!-- Structure (square) + movement (arrows opening outward): the Majal concept.
+       Two teal tiles, two deep-petrol tiles, arranged as a pinwheel of arrows. -->
+  <g>
+    <!-- Top-left: teal small block -->
+    <path d="M14 14 H50 V32 H32 V50 H14 Z" fill="#23C4C0"/>
+    <!-- Top-right: deep bracket pointing up-right -->
+    <path d="M70 14 H106 V50 H88 V32 H70 Z" fill="#0A5C78"/>
+    <!-- Bottom-left: deep bracket pointing down-left -->
+    <path d="M14 70 H32 V88 H50 V106 H14 Z" fill="#0A5C78"/>
+    <!-- Bottom-right: teal block -->
+    <path d="M88 70 H106 V106 H70 V88 H88 Z" fill="#23C4C0"/>
+  </g>
+</svg>

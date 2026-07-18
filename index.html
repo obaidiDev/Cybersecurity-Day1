@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Cybersecurity Foundations · Day 1 — Majal</title>
+<link rel="icon" href="assets/majal-mark.svg">
+<link rel="stylesheet" href="lib/reset.css">
+<link rel="stylesheet" href="lib/reveal.css">
+<link rel="stylesheet" href="lib/plugin/highlight/monokai.css">
+<link rel="stylesheet" href="css/theme.css">
+</head>
+<body>
+<div class="reveal">
+  <div class="slides">
+
+    <!-- ============ 0 · TITLE ============ -->
+    <section class="divider" data-background-color="#0A5C78">
+      <div class="divwrap">
+        <div class="eyebrow">Majal · Cybersecurity Track</div>
+        <h1 style="font-size:2.9em">Cybersecurity<br>Foundations</h1>
+        <p class="lead" style="margin-top:.3em">Day 1 — the language, the mindset, and the map you’ll use all week.</p>
+        <div style="display:flex;align-items:center;gap:20px;margin-top:34px">
+          <div class="arrows"><i></i><i></i><i></i><i></i></div>
+          <div style="font-family:var(--font-ar);direction:rtl;color:#bfe4e8;font-size:.7em">نفتح لك آفاق التقنية</div>
+        </div>
+      </div>
+      <aside class="notes">Welcome. Today is foundations + two artifacts we build on for the rest of the week: the attack-lifecycle map and the ATT&CK board.</aside>
+    </section>
+
+    <!-- ============ 0b · HOW THE WEEK WORKS ============ -->
+    <section>
+      <div class="eyebrow">Read me first</div>
+      <h2>How this week fits together</h2>
+      <div class="grid g3" style="margin-top:22px">
+        <div class="card fragment fade-up"><div class="ic">🧭</div><h3>Today: foundations</h3><p class="muted" style="font-size:.68em">Five ideas that everything else hangs off — CIA, threat actors, attack surface, the kill chain, ATT&CK.</p></div>
+        <div class="card fragment fade-up"><div class="ic">🗺️</div><h3>The map</h3><p class="muted" style="font-size:.68em">The 8-stage attack lifecycle. We start it today and <em>fill it in every day</em> with each new attack we study.</p></div>
+        <div class="card fragment fade-up"><div class="ic">🏷️</div><h3>The board</h3><p class="muted" style="font-size:.68em">MITRE ATT&CK — our shared vocabulary. Every attack Days 2–5 gets <em>tagged</em> onto it.</p></div>
+      </div>
+      <p class="fragment fade-up" style="margin-top:24px;font-size:.72em"><span class="chip">the thread</span> &nbsp;By Friday, the map and the board tell the whole story of everything we broke into and defended.</p>
+    </section>
+
+    <!-- ============ 1 · CIA ============ -->
+    <section class="divider" data-background-color="#0A5C78">
+      <div class="divwrap">
+        <div class="eyebrow">Foundation 01</div>
+        <h2 style="font-size:2.3em">The CIA triad</h2>
+        <p class="lead">Three promises every system makes — and constantly trades off.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">What we protect</div>
+      <h2>Confidentiality · Integrity · Availability</h2>
+      <div class="grid g3" style="margin-top:22px">
+        <div class="card fragment fade-up"><div class="ic">🔒</div><h3>Confidentiality</h3><p class="muted" style="font-size:.66em">Only the right people can see it. Broken by leaks, snooping, stolen data.</p></div>
+        <div class="card fragment fade-up"><div class="ic">✅</div><h3>Integrity</h3><p class="muted" style="font-size:.66em">The data is correct and untampered. Broken by fraud, corruption, silent edits.</p></div>
+        <div class="card fragment fade-up"><div class="ic">⚡</div><h3>Availability</h3><p class="muted" style="font-size:.66em">It’s there when you need it. Broken by outages, DDoS, ransomware.</p></div>
+      </div>
+      <p class="fragment fade-up" style="margin-top:26px;font-size:.74em">Security isn’t maxing all three — it’s <strong>balancing</strong> them for the situation. Let’s feel that tension.</p>
+      <aside class="notes">Don’t define and move on — the next slide lets them manipulate the trade-off directly.</aside>
+    </section>
+
+    <section>
+      <div class="eyebrow">Try it · balance the dials</div>
+      <h2 style="font-size:1.4em">The tension console</h2>
+      <div id="cia-console">
+        <div class="scenario">Scenario: a hospital <b>ER records system</b>. Doctors must reach records <b>instantly</b>, records must be <b>trustworthy</b>, and patient privacy still matters. Tune the dials to keep all three healthy.</div>
+        <div class="cia">
+          <div class="dials">
+            <div class="dial">
+              <div class="dhead"><span class="dname">Confidentiality <span>lockdown</span></span><span class="dval" id="cia-cv">50</span></div>
+              <input type="range" id="cia-c" min="0" max="100" value="50">
+            </div>
+            <div class="dial">
+              <div class="dhead"><span class="dname">Integrity <span>verification</span></span><span class="dval" id="cia-iv">50</span></div>
+              <input type="range" id="cia-i" min="0" max="100" value="50">
+            </div>
+            <div class="dial">
+              <div class="dhead"><span class="dname">Availability <span>openness</span></span><span class="dval" id="cia-av">50</span></div>
+              <input type="range" id="cia-a" min="0" max="100" value="50">
+            </div>
+          </div>
+          <div class="readout">
+            <h3>How the ER actually fares</h3>
+            <div class="gauge" id="g-c"><div class="lbl"><span>Confidentiality</span><b>0</b></div><div class="bar"><i></i></div></div>
+            <div class="gauge" id="g-i"><div class="lbl"><span>Integrity</span><b>0</b></div><div class="bar"><i></i></div></div>
+            <div class="gauge" id="g-a"><div class="lbl"><span>Availability</span><b>0</b></div><div class="bar"><i></i></div></div>
+            <div class="verdict" id="cia-verdict">Move a dial to begin.</div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes">Push confidentiality to 100 → availability collapses (heavy access control slows real doctors). The lesson is the trade-off, not a “right” answer. Green = meets the ER’s need.</aside>
+    </section>
+
+    <!-- ============ 2 · THREAT ACTORS ============ -->
+    <section class="divider" data-background-color="#0A5C78">
+      <div class="divwrap">
+        <div class="eyebrow">Foundation 02</div>
+        <h2 style="font-size:2.3em">Who’s attacking — and why</h2>
+        <p class="lead">Motive shapes method. Read the motive and you can predict the move.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">The line-up</div>
+      <h2>Five kinds of adversary</h2>
+      <div class="grid g3" style="margin-top:18px">
+        <div class="card fragment fade-up"><div class="ic">🧑‍💻</div><h3>Script kiddie</h3><p class="tiny">Motive: <em>ego, thrill.</em> Off-the-shelf tools, noisy, low skill.</p></div>
+        <div class="card fragment fade-up"><div class="ic">📣</div><h3>Hacktivist</h3><p class="tiny">Motive: <em>ideology.</em> Wants a message seen — defacement, leaks.</p></div>
+        <div class="card fragment fade-up"><div class="ic">💰</div><h3>Cybercriminal</h3><p class="tiny">Motive: <em>money.</em> Ransomware, fraud, data for sale.</p></div>
+        <div class="card fragment fade-up"><div class="ic">🎫</div><h3>Insider</h3><p class="tiny">Motive: <em>revenge, greed.</em> Already has legitimate access.</p></div>
+        <div class="card fragment fade-up"><div class="ic">🛰️</div><h3>Nation-state / APT</h3><p class="tiny">Motive: <em>espionage.</em> Patient, stealthy, well-funded.</p></div>
+        <div class="card fragment fade-up" style="background:color-mix(in srgb,var(--teal) 12%,white);border-style:dashed"><div class="ic">🔍</div><h3>Your job</h3><p class="tiny">Given the evidence — <em>whodunit?</em></p></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Try it · run the investigation</div>
+      <h2 style="font-size:1.4em">Whodunit</h2>
+      <div id="investigation">
+        <div class="case">
+          <div class="file">
+            <div class="casetitle" id="case-title">Case</div>
+            <ul class="clues" id="case-clues"></ul>
+            <div style="display:flex;gap:10px;margin-top:10px">
+              <button class="btn" id="case-next">Reveal first clue →</button>
+              <button class="btn ghost" id="case-new">New case ↻</button>
+            </div>
+          </div>
+          <div>
+            <div class="suspects" id="case-suspects"></div>
+            <div class="cverdict" id="case-verdict">Reveal the clues, watch suspects drop out, then name your culprit.</div>
+          </div>
+        </div>
+      </div>
+      <aside class="notes">Reveal clues one at a time; suspects dim as they’re ruled out. Let students argue before accusing. Three cases: hacktivist, nation-state, insider.</aside>
+    </section>
+
+    <!-- ============ 3 · ATTACK SURFACE ============ -->
+    <section class="divider" data-background-color="#0A5C78">
+      <div class="divwrap">
+        <div class="eyebrow">Foundation 03</div>
+        <h2 style="font-size:2.3em">The attack surface</h2>
+        <p class="lead">Every door, window, and vent an attacker could try. It’s always bigger than you think.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Try it · guess, then look</div>
+      <h2 style="font-size:1.4em">How many ways in?</h2>
+      <div id="attack-surface">
+        <div class="surface">
+          <div class="askbox">
+            <p style="font-size:.72em">Picture one <strong>small</strong> retail company. How many different ways could an attacker get in?</p>
+            <div class="guessin">
+              <input type="number" id="surf-guess" min="1" max="99" placeholder="?">
+              <button class="btn" id="surf-go">Reveal the surface</button>
+            </div>
+            <div class="counter"><span id="surf-count">0</span><small>ways in found</small></div>
+            <p class="tiny" id="surf-cap" style="margin-top:14px">Your guess vs. reality shows up here.</p>
+            <div class="legend">
+              <span><i style="background:var(--teal)"></i>Digital</span>
+              <span><i style="background:var(--yellow)"></i>Human</span>
+              <span><i style="background:#e07a3a"></i>Physical</span>
+              <span><i style="background:#9a66ff"></i>Social</span>
+            </div>
+          </div>
+          <div class="field" id="surf-field"></div>
+        </div>
+      </div>
+      <p class="fragment fade-up" style="font-size:.7em;margin-top:6px">Attackers don’t hit all of these at once — they move through them in a <strong>predictable order</strong>. That order is next.</p>
+      <aside class="notes">Let them commit a number out loud first. The reveal explodes ~16 vectors across 4 categories. Punchline: this is a SMALL company.</aside>
+    </section>
+
+    <!-- ============ 4 · KILL CHAIN ============ -->
+    <section class="divider" data-background-color="#0A5C78">
+      <div class="divwrap">
+        <div class="step-badge">recon → delivery → foothold → persistence → priv-esc → lateral → exfil → impact</div>
+        <div class="eyebrow" style="margin-top:14px">Foundation 04 · the map</div>
+        <h2 style="font-size:2.2em">The attack lifecycle</h2>
+        <p class="lead">Almost every intrusion follows the same 8 steps. Learn the steps → know where to look, and where to break the chain.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">The eight stages</div>
+      <h2 style="font-size:1.4em">One chain, eight links</h2>
+      <div class="grid g4" style="grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px">
+        <div class="card fragment fade-up" style="padding:14px"><div class="sn mono" style="color:var(--teal-deep);font-size:.6em">01</div><h3 style="font-size:.9em">Recon</h3><p class="tiny">Study the target.</p></div>
+        <div class="card fragment fade-up" style="padding:14px"><div class="sn mono" style="color:var(--teal-deep);font-size:.6em">02</div><h3 style="font-size:.9em">Delivery</h3><p class="tiny">Get the payload in.</p></div>
+        <div class="card fragment fade-up" style="padding:14px"><div class="sn mono" style="color:var(--teal-deep);font-size:.6em">03</div><h3 style="font-size:.9em">Foothold</h3><p class="tiny">Code runs; first access.</p></div>
+        <div class="card fragment fade-up" style="padding:14px"><div class="sn mono" style="color:var(--teal-deep);font-size:.6em">04</div><h3 style="font-size:.9em">Persistence</h3><p class="tiny">Survive a reboot.</p></div>
+        <div class="card fragment fade-up" style="padding:14px"><div class="sn mono" style="color:var(--teal-deep);font-size:.6em">05</div><h3 style="font-size:.9em">Priv-esc</h3><p class="tiny">Gain more power.</p></div>
+        <div class="card fragment fade-up" style="padding:14px"><div class="sn mono" style="color:var(--teal-deep);font-size:.6em">06</div><h3 style="font-size:.9em">Lateral</h3><p class="tiny">Spread across the network.</p></div>
+        <div class="card fragment fade-up" style="padding:14px"><div class="sn mono" style="color:var(--teal-deep);font-size:.6em">07</div><h3 style="font-size:.9em">Exfiltration</h3><p class="tiny">Steal data out.</p></div>
+        <div class="card fragment fade-up" style="padding:14px;background:color-mix(in srgb,var(--yellow) 20%,white)"><div class="sn mono" style="color:var(--teal-deep);font-size:.6em">08</div><h3 style="font-size:.9em">Impact</h3><p class="tiny">The damage / payoff.</p></div>
+      </div>
+      <p class="fragment fade-up" style="margin-top:22px;font-size:.72em">Defender’s secret: <strong>you only have to break one link.</strong> Let’s walk a real attack down the chain.</p>
+    </section>
+
+    <section data-background-color="#eef4f5">
+      <div class="eyebrow">The map · walk it, then fill it in all week</div>
+      <div class="frame-wrap"><iframe src="components/killchain-map.html" title="Attack lifecycle map"></iframe></div>
+      <p class="framehint">▶ “Walk the attack” plays the Day-1 example · click any stage to edit · “+ New day” starts a fresh map for Days 2–5 (saved in your browser).</p>
+      <aside class="notes">Hit “Walk the attack” to play the retail intrusion stage by stage. This same tool reopens every day — each new attack becomes a new case that persists.</aside>
+    </section>
+
+    <!-- ============ 5 · MITRE ATT&CK ============ -->
+    <section class="divider" data-background-color="#0A5C78">
+      <div class="divwrap">
+        <div class="eyebrow">Foundation 05 · the board</div>
+        <h2 style="font-size:2.2em">MITRE ATT&CK</h2>
+        <p class="lead">The shared vocabulary that lets every analyst on Earth describe an attack the exact same way.</p>
+      </div>
+    </section>
+
+    <section>
+      <div class="eyebrow">Why a shared vocabulary</div>
+      <h2>“They ran a script” vs. <span class="tid">T1059</span></h2>
+      <div class="grid g2" style="margin-top:20px">
+        <div class="card fragment fade-up"><h3>Without it</h3><p class="muted" style="font-size:.68em">Everyone describes the same move differently. Reports don’t line up, tools don’t agree, knowledge doesn’t transfer.</p></div>
+        <div class="card fragment fade-up" style="border-color:var(--teal)"><h3>With ATT&CK</h3><p class="muted" style="font-size:.68em">Every technique has an ID and a definition. <span class="tid">T1566</span> means “phishing” to <em>everyone</em> — SOCs, vendors, threat reports.</p></div>
+      </div>
+      <p class="fragment fade-up" style="margin-top:22px;font-size:.72em"><strong>Tactics</strong> = the attacker’s goal (the <em>why</em>). &nbsp;<strong>Techniques</strong> = how they achieve it (the <em>how</em>), each with an ID like <span class="tid">T1566</span>.</p>
+      <aside class="notes">Keep it concrete. Tactic = column = goal. Technique = the ID inside it. The board on the next slide is explorable + it’s our weekly tagging surface.</aside>
+    </section>
+
+    <section data-background-color="#eef4f5">
+      <div class="eyebrow">The board · explore, then tag every attack</div>
+      <div class="frame-wrap"><iframe src="components/attack-board.html" title="MITRE ATT&CK board"></iframe></div>
+      <p class="framehint">Hover a technique for its meaning · click to tag it for the selected day · Day 1 is pre-tagged from the attack we just walked. Coverage builds all week.</p>
+      <aside class="notes">Day 1 already carries the retail intrusion’s techniques — the same ones from the map. Days 2–5, switch the day and tag each new attack. The dots show the week’s coverage growing.</aside>
+    </section>
+
+    <section>
+      <div class="eyebrow">The click</div>
+      <h2 style="font-size:1.5em">The map and the board are the same story</h2>
+      <table class="maptable" style="margin-top:14px">
+        <tr><td>Recon</td><td class="arrow">→</td><td>Reconnaissance &nbsp;<span class="tid">T1589</span></td></tr>
+        <tr><td>Delivery</td><td class="arrow">→</td><td>Initial Access · Phishing &nbsp;<span class="tid">T1566</span></td></tr>
+        <tr><td>Foothold</td><td class="arrow">→</td><td>Execution &nbsp;<span class="tid">T1059</span> / <span class="tid">T1204</span></td></tr>
+        <tr><td>Persistence</td><td class="arrow">→</td><td>Persistence · Scheduled Task &nbsp;<span class="tid">T1053</span></td></tr>
+        <tr><td>Priv-esc → Lateral</td><td class="arrow">→</td><td>Priv Esc / Lateral Movement &nbsp;<span class="tid">T1078</span> · <span class="tid">T1021</span></td></tr>
+        <tr><td>Exfiltration → Impact</td><td class="arrow">→</td><td>Exfiltration / Impact &nbsp;<span class="tid">T1041</span> · <span class="tid">T1486</span></td></tr>
+      </table>
+      <p style="margin-top:16px;font-size:.7em">The <strong>map</strong> gives you the story’s shape. The <strong>board</strong> gives every beat a precise name.</p>
+    </section>
+
+    <!-- ============ 6 · WRAP ============ -->
+    <section class="divider" data-background-color="#0A5C78">
+      <div class="divwrap">
+        <div class="eyebrow">Day 1 · wrap</div>
+        <h2 style="font-size:2em">You now have the whole toolkit</h2>
+        <ul style="font-size:.8em;color:#cbe9ec;line-height:1.7;list-style:none;padding:0;margin:.4em 0">
+          <li>⬦ <strong style="color:#fff">CIA</strong> — what we protect, and its trade-offs</li>
+          <li>⬦ <strong style="color:#fff">Threat actors</strong> — read the motive, predict the move</li>
+          <li>⬦ <strong style="color:#fff">Attack surface</strong> — every door counts</li>
+          <li>⬦ <strong style="color:#fff">The map</strong> — 8 stages, break one link</li>
+          <li>⬦ <strong style="color:#fff">ATT&CK</strong> — one shared language for all of it</li>
+        </ul>
+        <div style="display:flex;align-items:center;gap:18px;margin-top:22px">
+          <div class="arrows"><i></i><i></i><i></i><i></i></div>
+          <p class="lead" style="margin:0;color:#bfe4e8">Tomorrow: our first real attack — onto the map, onto the board.</p>
+        </div>
+      </div>
+      <aside class="notes">Leave the map and board open as you close. They are the spine of Days 2–5.</aside>
+    </section>
+
+  </div>
+</div>
+
+<div class="brand-footer">
+  <span style="display:flex;align-items:center;gap:12px"><img src="assets/majal-mark.svg" alt="Majal"> Cybersecurity · Day 1</span>
+</div>
+
+<script src="lib/reveal.js"></script>
+<script src="lib/plugin/highlight/highlight.js"></script>
+<script src="lib/plugin/notes/notes.js"></script>
+<script src="lib/plugin/zoom/zoom.js"></script>
+<script src="lib/confetti.js"></script>
+<script src="js/interactions.js"></script>
+<script>
+  const deck = new Reveal({
+    width: 1280, height: 720, margin: 0.04,
+    minScale: 0.2, maxScale: 1.6,
+    hash: true, slideNumber: 'c/t', transition: 'slide', transitionSpeed: 'default',
+    plugins: [ RevealHighlight, RevealNotes, RevealZoom ]
+  });
+  deck.initialize().then(()=>{ if(window.MajalInteractions) window.MajalInteractions.boot(); });
+  // safety: (re)boot interactions when their slides come into view
+  deck.on('slidechanged', ()=>{ if(window.MajalInteractions) window.MajalInteractions.boot(); });
+</script>
+</body>
+</html>

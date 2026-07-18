@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Attack Lifecycle Map · Majal</title>
+<link rel="stylesheet" href="../css/theme.css">
+<style>
+  html,body{ margin:0; background:var(--paper); color:var(--ink); font-family:var(--font-body); }
+  .wrap{ padding:18px 22px 26px; }
+  .top{ display:flex; align-items:center; justify-content:space-between; gap:14px; flex-wrap:wrap; margin-bottom:10px;}
+  .top h1{ font-family:var(--font-display); color:var(--petrol); font-size:22px; margin:0; }
+  .top .sub{ font-family:var(--font-mono); font-size:11px; letter-spacing:.14em; color:#6a838a; text-transform:uppercase;}
+  .cases{ display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+  .casetab{ font-family:var(--font-display); font-weight:600; font-size:13px; padding:7px 13px; border-radius:999px;
+    border:2px solid var(--line); background:#fff; color:var(--petrol); cursor:pointer; }
+  .casetab.on{ background:var(--petrol); color:#fff; border-color:var(--petrol); }
+  .toolbtn{ font-family:var(--font-mono); font-size:12px; border:1px solid var(--line); background:#fff; color:#4a666e;
+    border-radius:9px; padding:7px 11px; cursor:pointer;}
+  .toolbtn:hover{ border-color:var(--teal); color:var(--teal-deep); }
+
+  /* spine */
+  .spine{ display:grid; grid-template-columns:repeat(8,1fr); gap:10px; margin:14px 0; }
+  .stage{ position:relative; background:#fff; border:1px solid var(--line); border-radius:14px; padding:12px 12px 14px;
+    cursor:pointer; transition:.2s; min-height:132px; display:flex; flex-direction:column; }
+  .stage:hover{ border-color:var(--teal); transform:translateY(-2px); box-shadow:var(--shadow-sm); }
+  .stage.active{ border-color:var(--teal-deep); box-shadow:0 0 0 3px color-mix(in srgb,var(--teal) 30%,white); }
+  .stage .sn{ font-family:var(--font-mono); font-size:10px; color:var(--teal-deep); letter-spacing:.1em; }
+  .stage .st{ font-family:var(--font-display); font-weight:600; font-size:14px; color:var(--petrol); margin:3px 0 7px; line-height:1.1;}
+  .stage .snote{ font-size:11.5px; line-height:1.3; color:#3d5b63; flex:1; overflow:hidden; }
+  .stage.empty .snote{ color:#9fb3b8; font-style:italic; }
+  .stage .stids{ display:flex; flex-wrap:wrap; gap:4px; margin-top:7px; }
+  .stage .t{ font-family:var(--font-mono); font-size:9.5px; background:var(--paper); border:1px solid var(--line);
+    border-radius:5px; padding:1px 5px; color:var(--petrol); }
+  .stage .flow{ position:absolute; right:-9px; top:50%; transform:translateY(-50%); color:var(--gray); font-size:14px; z-index:2;}
+  .stage:last-child .flow{ display:none; }
+  .stage.lit{ animation:pop .5s ease; border-color:var(--yellow); box-shadow:0 0 0 3px color-mix(in srgb,var(--yellow) 45%,white);}
+  @keyframes pop{ 0%{transform:scale(.96)} 55%{transform:scale(1.04)} 100%{transform:scale(1)} }
+
+  /* editor */
+  .editor{ background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px 18px; box-shadow:var(--shadow-sm);
+    display:none; }
+  .editor.show{ display:block; }
+  .editor h3{ margin:0 0 4px; color:var(--petrol); font-family:var(--font-display); font-size:16px;}
+  .editor .cat{ font-family:var(--font-mono); font-size:11px; color:var(--teal-deep); letter-spacing:.08em; margin-bottom:10px;}
+  .editor textarea{ width:100%; box-sizing:border-box; min-height:70px; border:1px solid var(--line); border-radius:10px;
+    padding:10px 12px; font-family:var(--font-body); font-size:14px; resize:vertical; }
+  .editor .row{ display:flex; gap:8px; margin-top:10px; align-items:center; flex-wrap:wrap;}
+  .editor input[type=text]{ flex:1; min-width:160px; border:1px solid var(--line); border-radius:9px; padding:8px 10px;
+    font-family:var(--font-mono); font-size:13px; }
+  .editor .hint{ font-size:11px; color:#6a838a; margin-top:8px; font-family:var(--font-mono); }
+
+  .walkbar{ display:flex; gap:10px; align-items:center; margin:6px 0 2px; }
+  .prog{ flex:1; height:6px; background:#e3edef; border-radius:5px; overflow:hidden; }
+  .prog>i{ display:block; height:100%; width:0; background:var(--teal); border-radius:5px; transition:width .35s;}
+  @media (max-width:900px){ .spine{ grid-template-columns:repeat(2,1fr); } }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top">
+    <div>
+      <div class="sub">Majal · Cybersecurity — the week’s map</div>
+      <h1>Attack Lifecycle &nbsp;<span style="color:var(--teal-deep);font-size:15px;font-family:var(--font-mono)">recon → impact</span></h1>
+    </div>
+    <div class="cases" id="cases"></div>
+  </div>
+
+  <div class="walkbar">
+    <button class="btn" id="play" style="font-size:13px">▶ Walk the attack</button>
+    <div class="prog"><i id="prog"></i></div>
+    <button class="toolbtn" id="newcase">+ New day</button>
+    <button class="toolbtn" id="export">Export</button>
+    <button class="toolbtn" id="reset">Reset all</button>
+  </div>
+
+  <div class="spine" id="spine"></div>
+
+  <div class="editor" id="editor">
+    <div class="cat" id="ed-cat"></div>
+    <h3 id="ed-title"></h3>
+    <textarea id="ed-note" placeholder="What does the attacker do at this stage? (students fill this in)"></textarea>
+    <div class="row">
+      <input type="text" id="ed-tids" placeholder="ATT&CK IDs, comma-separated e.g. T1566.001, T1059">
+      <button class="btn" id="ed-save" style="font-size:13px">Save stage</button>
+    </div>
+    <div class="hint">Tip: tag each stage with its ATT&CK technique — that’s the same vocabulary you’ll build on the board.</div>
+  </div>
+</div>
+
+<script src="../lib/confetti.js"></script>
+<script>
+(function(){
+  const $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+  const KEY='majal.killchain.v1';
+  const STAGES=[
+    {k:'recon',      n:'01', t:'Reconnaissance', cat:'Study the target'},
+    {k:'delivery',   n:'02', t:'Delivery',       cat:'Get the payload in'},
+    {k:'foothold',   n:'03', t:'Foothold',       cat:'Execution / initial access'},
+    {k:'persistence',n:'04', t:'Persistence',    cat:'Survive a reboot'},
+    {k:'privesc',    n:'05', t:'Priv. escalation',cat:'Get more power'},
+    {k:'lateral',    n:'06', t:'Lateral movement',cat:'Spread across the network'},
+    {k:'exfil',      n:'07', t:'Exfiltration',   cat:'Steal the data out'},
+    {k:'impact',     n:'08', t:'Impact',         cat:'The payoff / damage'}
+  ];
+  // Day-1 pre-filled sample — a realistic retail intrusion (works as the narrative walk)
+  const SAMPLE=[
+    {note:'Scrapes LinkedIn for Acme Retail’s finance staff; learns the email format and picks an A/P clerk.', tids:['T1589','T1591']},
+    {note:'Spear-phishing email carrying a macro-enabled “overdue invoice” .docm.', tids:['T1566.001']},
+    {note:'Clerk enables macros → loader runs and beacons out to the attacker’s C2.', tids:['T1204.002','T1059']},
+    {note:'Loader registers a scheduled task so it comes back after every reboot.', tids:['T1053.005']},
+    {note:'Dumps credentials, finds a reused local-admin password, and elevates.', tids:['T1003','T1078']},
+    {note:'Uses the stolen creds over SMB/RDP to reach the file server.', tids:['T1021.001','T1021.002']},
+    {note:'Archives customer PII + card data and exfiltrates over HTTPS to attacker cloud.', tids:['T1560','T1041']},
+    {note:'Deploys ransomware, encrypts the servers, drops the ransom note.', tids:['T1486']}
+  ];
+
+  function blank(){ return STAGES.map(()=>({note:'',tids:[]})); }
+  function load(){
+    let d; try{ d=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+    if(!d || !d.cases || !d.cases.length){
+      d={ cur:0, cases:[ {name:'Day 1 — sample', stages: SAMPLE.map(s=>({note:s.note,tids:s.tids.slice()}))} ] };
+      save(d);
+    }
+    return d;
+  }
+  function save(d){ try{ localStorage.setItem(KEY,JSON.stringify(d)); }catch(e){} }
+
+  let data=load(), active=null;
+
+  function renderCases(){
+    $('#cases').innerHTML = data.cases.map((c,i)=>
+      `<button class="casetab ${i===data.cur?'on':''}" data-i="${i}">${c.name}</button>`).join('');
+    $$('#cases .casetab').forEach(b=> b.onclick=()=>{ data.cur=+b.dataset.i; active=null; save(data); renderCases(); renderSpine(); closeEditor(); });
+  }
+  function curStages(){ return data.cases[data.cur].stages; }
+  function renderSpine(){
+    const st=curStages();
+    $('#spine').innerHTML = STAGES.map((s,i)=>{
+      const d=st[i]||{note:'',tids:[]};
+      const empty = !d.note && (!d.tids||!d.tids.length);
+      return `<div class="stage ${active===i?'active':''} ${empty?'empty':''}" data-i="${i}">
+        <div class="sn">${s.n}</div><div class="st">${s.t}</div>
+        <div class="snote">${d.note? escape(d.note): 'click to fill in'}</div>
+        <div class="stids">${(d.tids||[]).map(t=>`<span class="t">${t}</span>`).join('')}</div>
+        <div class="flow">→</div></div>`;
+    }).join('');
+    $$('#spine .stage').forEach(el=> el.onclick=()=>openEditor(+el.dataset.i));
+  }
+  function escape(s){ return String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c])); }
+
+  function openEditor(i){
+    active=i; renderSpine();
+    const s=STAGES[i], d=curStages()[i]||{note:'',tids:[]};
+    $('#ed-cat').textContent = s.n+' · '+s.cat;
+    $('#ed-title').textContent = s.t;
+    $('#ed-note').value = d.note||'';
+    $('#ed-tids').value = (d.tids||[]).join(', ');
+    $('#editor').classList.add('show');
+    $('#ed-note').focus();
+  }
+  function closeEditor(){ $('#editor').classList.remove('show'); active=null; renderSpine(); }
+  $('#ed-save').onclick=()=>{
+    if(active==null) return;
+    const note=$('#ed-note').value.trim();
+    const tids=$('#ed-tids').value.split(',').map(t=>t.trim().toUpperCase()).filter(Boolean);
+    curStages()[active]={note,tids}; save(data); renderSpine();
+    $('#editor').classList.remove('show'); active=null; renderSpine();
+    if(window.confetti && note) confetti({particleCount:36,spread:55,scalar:.8,colors:['#23C4C0','#E2E233','#0A5C78']});
+  };
+
+  // walk-through
+  let playing=false;
+  $('#play').onclick=()=>{
+    if(playing) return; playing=true; closeEditor();
+    const cells=$$('#spine .stage'); let i=0;
+    $$('#spine .stage').forEach(c=>c.classList.remove('lit'));
+    const step=()=>{
+      if(i>0) cells[i-1].classList.remove('lit');
+      if(i>=cells.length){ playing=false; $('#prog').style.width='100%';
+        if(window.confetti) confetti({particleCount:110,spread:90,origin:{y:.6},colors:['#23C4C0','#E2E233','#0A5C78','#fff']}); return; }
+      cells[i].classList.add('lit'); cells[i].scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'});
+      $('#prog').style.width=((i+1)/cells.length*100)+'%';
+      i++; setTimeout(step,900);
+    };
+    step();
+  };
+
+  $('#newcase').onclick=()=>{
+    const n=prompt('Name this attack / day:', 'Day '+(data.cases.length+1)+' — ');
+    if(n===null) return;
+    data.cases.push({name:n||('Day '+(data.cases.length+1)), stages:blank()});
+    data.cur=data.cases.length-1; save(data); renderCases(); renderSpine(); closeEditor();
+  };
+  $('#reset').onclick=()=>{ if(confirm('Clear the whole week’s map and start over?')){ localStorage.removeItem(KEY); data=load(); active=null; renderCases(); renderSpine(); closeEditor(); } };
+  $('#export').onclick=()=>{
+    const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
+    const a=document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='majal-killchain.json'; a.click();
+  };
+
+  renderCases(); renderSpine();
+})();
+</script>
+</body>
+</html>
